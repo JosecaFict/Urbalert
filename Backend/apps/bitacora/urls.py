@@ -1,0 +1,12 @@
+"""Rutas de bitácora: /api/bitacora/..."""
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
+
+from .views import BitacoraViewSet
+
+router = DefaultRouter()
+router.register('', BitacoraViewSet, basename='bitacora')
+
+urlpatterns = [
+    path('', include(router.urls)),
+]

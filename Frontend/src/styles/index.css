@@ -1,0 +1,34 @@
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-slate-100 text-slate-800 antialiased;
+    @apply dark:bg-slate-950 dark:text-slate-200;
+    font-family: 'Inter', system-ui, 'Segoe UI', sans-serif;
+  }
+}
+
+@layer components {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-slate-300 dark:bg-slate-600;
+  }
+}
+
+/* Ajuste del z-index de Leaflet para que no tape modales y sidebar */
+.leaflet-container {
+  z-index: 0;
+}
