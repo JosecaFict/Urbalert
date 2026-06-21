@@ -120,7 +120,7 @@ if os.getenv('DATABASE_URL'):
     import dj_database_url
     DATABASES = {
         'default': dj_database_url.parse(
-            os.getenv('DATABASE_URL'), conn_max_age=600, ssl_require=True,
+            os.getenv('DATABASE_URL'), conn_max_age=600,
         )
     }
 elif os.getenv('DB_ENGINE', 'sqlite') == 'postgres':
