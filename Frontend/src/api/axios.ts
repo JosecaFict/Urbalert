@@ -5,10 +5,11 @@ const STORAGE_REFRESH = 'urbalert_refresh'
 
 /**
  * Instancia central de Axios.
- * En desarrollo Vite hace proxy de /api hacia el backend Django (puerto 8000).
+ * - En desarrollo: Vite hace proxy de /api hacia el backend Django (puerto 8000).
+ * - En producción: se usa VITE_API_URL (ej. https://tu-backend.up.railway.app/api).
  */
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },
