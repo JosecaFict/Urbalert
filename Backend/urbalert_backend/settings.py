@@ -33,6 +33,18 @@ DEBUG = env_bool('DEBUG', True)
 
 ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1')
 
+# Railway expone el dominio público en esta variable: lo agregamos solo.
+RAILWAY_DOMAIN = os.getenv('RAILWAY_PUBLIC_DOMAIN')
+if RAILWAY_DOMAIN:
+    ALLOWED_HOSTS.append(RAILWAY_DOMAIN)
+ALLOWED_HOSTS += ['.up.railway.app']
+
+# Orígenes de confianza para CSRF (necesario en HTTPS con dominios externos)
+CSRF_TRUSTED_ORIGINS = env_list('CSRF_TRUSTED_ORIGINS', '')
+if RAILWAY_DOMAIN:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RAILWAY_DOMAIN}')
+CSRF_TRUSTED_ORIGINS += ['https://*.up.railway.app']
+
 
 # --------------------------------------------------------------------------- #
 # Aplicaciones
@@ -69,6 +81,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -102,7 +115,15 @@ ASGI_APPLICATION = 'urbalert_backend.asgi.application'
 # --------------------------------------------------------------------------- #
 # Base de datos (SQLite por defecto, listo para PostgreSQL)
 # --------------------------------------------------------------------------- #
-if os.getenv('DB_ENGINE', 'sqlite') == 'postgres':
+# Railway entrega una sola variable DATABASE_URL; si existe, la usamos.
+if os.getenv('DATABASE_URL'):
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.parse(
+            os.getenv('DATABASE_URL'), conn_max_age=600, ssl_require=True,
+        )
+    }
+elif os.getenv('DB_ENGINE', 'sqlite') == 'postgres':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -147,7 +168,9 @@ USE_TZ = True
 # Archivos estáticos y media
 # --------------------------------------------------------------------------- #
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+# WhiteNoise sirve y comprime los estáticos en producción.
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -192,4 +215,6 @@ CORS_ALLOWED_ORIGINS = env_list(
     'CORS_ALLOWED_ORIGINS',
     'http://localhost:5173,http://127.0.0.1:5173',
 )
+# Permite automáticamente cualquier dominio de Vercel (producción y previews).
+CORS_ALLOWED_ORIGIN_REGEXES = [r'^https://.*\.vercel\.app$']
 CORS_ALLOW_CREDENTIALS = True
