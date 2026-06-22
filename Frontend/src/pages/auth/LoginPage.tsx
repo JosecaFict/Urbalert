@@ -9,13 +9,6 @@ import { useToast } from '../../context/ToastContext'
 import { extraerError } from '../../api/axios'
 import { rutaInicialPorRol } from '../../utils/roleLabels'
 
-const CUENTAS_DEMO = [
-  { rol: 'Administrador', email: 'admin@urbalert.com', pass: 'admin123' },
-  { rol: 'Encargado', email: 'encargado@urbalert.com', pass: 'encargado123' },
-  { rol: 'Trabajador', email: 'trabajador@urbalert.com', pass: 'trabajador123' },
-  { rol: 'Ciudadano', email: 'ciudadano@urbalert.com', pass: 'ciudadano123' },
-]
-
 export default function LoginPage() {
   const { login } = useAuth()
   const toast = useToast()
@@ -40,11 +33,6 @@ export default function LoginPage() {
     } finally {
       setCargando(false)
     }
-  }
-
-  const usarDemo = (correo: string, pass: string) => {
-    setEmail(correo)
-    setPassword(pass)
   }
 
   return (
@@ -81,25 +69,6 @@ export default function LoginPage() {
           Regístrate como ciudadano
         </Link>
       </p>
-
-      <div className="mt-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
-          Cuentas de prueba
-        </p>
-        <div className="grid grid-cols-2 gap-2">
-          {CUENTAS_DEMO.map((c) => (
-            <button
-              key={c.email}
-              type="button"
-              onClick={() => usarDemo(c.email, c.pass)}
-              className="rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-left text-xs transition hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30"
-            >
-              <span className="block font-semibold text-slate-700 dark:text-slate-200">{c.rol}</span>
-              <span className="block truncate text-slate-400 dark:text-slate-500">{c.email}</span>
-            </button>
-          ))}
-        </div>
-      </div>
     </AuthLayout>
   )
 }

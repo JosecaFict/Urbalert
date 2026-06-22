@@ -33,6 +33,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Archivo privado con las credenciales de prueba (NO subir)
+cuentas.md
+
 # ───────────── Editores / SO ─────────────
 .vscode/
 .idea/
