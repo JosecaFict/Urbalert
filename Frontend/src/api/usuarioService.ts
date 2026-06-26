@@ -41,6 +41,11 @@ export const usuarioService = {
     await api.post(`/usuarios/${id}/restablecer-contrasena/`, { password })
   },
 
+  async administradores(): Promise<Usuario[]> {
+    const { data } = await api.get('/usuarios/administradores/')
+    return desempaquetar<Usuario>(data)
+  },
+
   async ciudadanos(): Promise<Usuario[]> {
     const { data } = await api.get('/usuarios/ciudadanos/')
     return desempaquetar<Usuario>(data)

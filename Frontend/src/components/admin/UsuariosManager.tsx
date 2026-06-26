@@ -22,6 +22,10 @@ interface UsuariosManagerProps {
   /** si se indica, filtra y fija el rol (ciudadanos/encargados/trabajadores) */
   rolFiltro?: RolNombre
   cargar: () => Promise<Usuario[]>
+  /** se ejecuta después de cada alta/edición/eliminación/restablecimiento */
+  onCambio?: () => void
+  /** contenido extra a renderizar entre el header y la tabla (tabs) */
+  encabezadoExtra?: React.ReactNode
 }
 
 export default function UsuariosManager({
@@ -29,6 +33,8 @@ export default function UsuariosManager({
   descripcion,
   rolFiltro,
   cargar,
+  onCambio,
+  encabezadoExtra,
 }: UsuariosManagerProps) {
   const toast = useToast()
   const [usuarios, setUsuarios] = useState<Usuario[]>([])
@@ -75,6 +81,7 @@ export default function UsuariosManager({
       setModalForm(false)
       setEditando(null)
       await recargar()
+      onCambio?.()
     } catch (e) {
       toast.error(extraerError(e))
     } finally {
@@ -89,6 +96,7 @@ export default function UsuariosManager({
       toast.exito('Usuario eliminado.')
       setAEliminar(null)
       await recargar()
+      onCambio?.()
     } catch (e) {
       toast.error(extraerError(e))
     }
@@ -197,6 +205,8 @@ export default function UsuariosManager({
           </Button>
         }
       />
+
+      {encabezadoExtra}
 
       <Card className="mb-6">
         <div className="w-full max-w-sm">

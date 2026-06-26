@@ -140,6 +140,10 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
+    def administradores(self, request):
+        return self._por_rol(Rol.ADMINISTRADOR)
+
+    @action(detail=False, methods=['get'])
     def ciudadanos(self, request):
         return self._por_rol(Rol.CIUDADANO)
 

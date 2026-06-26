@@ -15,9 +15,6 @@ import RegisterPage from '../pages/auth/RegisterPage'
 // Admin
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage'
 import UsuariosPage from '../pages/admin/UsuariosPage'
-import CiudadanosPage from '../pages/admin/CiudadanosPage'
-import EncargadosPage from '../pages/admin/EncargadosPage'
-import TrabajadoresPage from '../pages/admin/TrabajadoresPage'
 import CategoriasPage from '../pages/admin/CategoriasPage'
 import TodosReclamosPage from '../pages/admin/TodosReclamosPage'
 import BitacoraPage from '../pages/admin/BitacoraPage'
@@ -69,9 +66,9 @@ export default function AppRoutes() {
           <Route element={<RoleRoute roles={['administrador']} />}>
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admin/usuarios" element={<UsuariosPage />} />
-            <Route path="/admin/ciudadanos" element={<CiudadanosPage />} />
-            <Route path="/admin/encargados" element={<EncargadosPage />} />
-            <Route path="/admin/trabajadores" element={<TrabajadoresPage />} />
+            <Route path="/admin/ciudadanos" element={<Navigate to="/admin/usuarios?rol=ciudadano" replace />} />
+            <Route path="/admin/encargados" element={<Navigate to="/admin/usuarios?rol=encargado" replace />} />
+            <Route path="/admin/trabajadores" element={<Navigate to="/admin/usuarios?rol=trabajador" replace />} />
             <Route path="/admin/categorias" element={<CategoriasPage />} />
             <Route path="/admin/reclamos" element={<TodosReclamosPage />} />
             <Route path="/admin/bitacora" element={<BitacoraPage />} />

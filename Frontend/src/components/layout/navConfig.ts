@@ -1,9 +1,6 @@
 import {
   LayoutDashboard,
   Users,
-  UserCog,
-  HardHat,
-  UserRound,
   Tags,
   ClipboardList,
   ScrollText,
@@ -27,9 +24,6 @@ export const NAV_POR_ROL: Record<RolNombre, NavItem[]> = {
   administrador: [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
     { to: '/admin/usuarios', label: 'Usuarios', icon: Users },
-    { to: '/admin/ciudadanos', label: 'Ciudadanos', icon: UserRound },
-    { to: '/admin/encargados', label: 'Encargados', icon: UserCog },
-    { to: '/admin/trabajadores', label: 'Trabajadores', icon: HardHat },
     { to: '/admin/categorias', label: 'Categorías', icon: Tags },
     { to: '/admin/reclamos', label: 'Todos los reclamos', icon: ClipboardList },
     { to: '/admin/bitacora', label: 'Bitácora', icon: ScrollText },
