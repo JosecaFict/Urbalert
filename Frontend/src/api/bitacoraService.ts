@@ -15,6 +15,7 @@ export interface FiltrosBitacora {
   modulo?: string
   desde?: string
   hasta?: string
+  page_size?: number
 }
 
 export const bitacoraService = {

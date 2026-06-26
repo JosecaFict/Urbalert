@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Search, Filter, X } from 'lucide-react'
 import PageHeader from '../../components/common/PageHeader'
 import Card from '../../components/common/Card'
@@ -6,6 +6,7 @@ import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
 import Table, { type Columna } from '../../components/common/Table'
 import Badge from '../../components/common/Badge'
+import Pagination from '../../components/common/Pagination'
 import { bitacoraService, type FiltrosBitacora } from '../../api/bitacoraService'
 import { extraerError } from '../../api/axios'
 import { useToast } from '../../context/ToastContext'
@@ -19,11 +20,14 @@ export default function BitacoraPage() {
   const [registros, setRegistros] = useState<Bitacora[]>([])
   const [cargando, setCargando] = useState(true)
   const [filtros, setFiltros] = useState<FiltrosBitacora>({})
+  const [pagina, setPagina] = useState(1)
+  const [tamanoPagina, setTamanoPagina] = useState(20)
 
   const cargar = async (f: FiltrosBitacora = {}) => {
     setCargando(true)
     try {
-      setRegistros(await bitacoraService.listar(f))
+      setRegistros(await bitacoraService.listar({ ...f, page_size: 1000 }))
+      setPagina(1)
     } catch (e) {
       toast.error(extraerError(e))
     } finally {
@@ -41,6 +45,15 @@ export default function BitacoraPage() {
     setFiltros({})
     cargar()
   }
+
+  useEffect(() => {
+    setPagina(1)
+  }, [tamanoPagina])
+
+  const paginados = useMemo(() => {
+    const inicio = (pagina - 1) * tamanoPagina
+    return registros.slice(inicio, inicio + tamanoPagina)
+  }, [registros, pagina, tamanoPagina])
 
   const columnas: Columna<Bitacora>[] = [
     { header: 'Fecha y hora', render: (b) => <span className="whitespace-nowrap">{formatDateTime(b.fecha_hora)}</span> },
@@ -101,11 +114,22 @@ export default function BitacoraPage() {
       <Card>
         <Table
           columnas={columnas}
-          datos={registros}
+          datos={paginados}
           keyExtractor={(b) => b.id}
           cargando={cargando}
           mensajeVacio="No hay movimientos registrados con esos filtros."
         />
+        {!cargando && registros.length > 0 && (
+          <div className="mt-4">
+            <Pagination
+              total={registros.length}
+              paginaActual={pagina}
+              tamanoPagina={tamanoPagina}
+              onCambiarPagina={setPagina}
+              onCambiarTamano={setTamanoPagina}
+            />
+          </div>
+        )}
       </Card>
     </div>
   )
