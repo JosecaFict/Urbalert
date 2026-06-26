@@ -6,6 +6,7 @@ import Select from '../../components/common/Select'
 import Input from '../../components/common/Input'
 import Modal from '../../components/common/Modal'
 import Loading from '../../components/common/Loading'
+import Pagination from '../../components/common/Pagination'
 import ReclamoTable from '../../components/reclamos/ReclamoTable'
 import ReclamoDetailView from '../../components/reclamos/ReclamoDetailView'
 import { Search } from 'lucide-react'
@@ -34,13 +35,16 @@ export default function TodosReclamosPage() {
   const [detalle, setDetalle] = useState<ReclamoDetalle | null>(null)
   const [cargandoDetalle, setCargandoDetalle] = useState(false)
 
+  const [pagina, setPagina] = useState(1)
+  const [tamanoPagina, setTamanoPagina] = useState(20)
+
   useEffect(() => {
     categoriaService.listar().then(setCategorias).catch(() => {})
   }, [])
 
   useEffect(() => {
     setCargando(true)
-    const params: Record<string, string> = {}
+    const params: Record<string, string> = { page_size: '1000' }
     if (estado) params.estado = estado
     if (categoria) params.categoria = categoria
     reclamoService
@@ -50,6 +54,10 @@ export default function TodosReclamosPage() {
       .finally(() => setCargando(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estado, categoria])
+
+  useEffect(() => {
+    setPagina(1)
+  }, [estado, categoria, busqueda, tamanoPagina])
 
   const abrirDetalle = async (id: number) => {
     setCargandoDetalle(true)
@@ -85,6 +93,11 @@ export default function TodosReclamosPage() {
     )
   }, [reclamos, busqueda])
 
+  const paginados = useMemo(() => {
+    const inicio = (pagina - 1) * tamanoPagina
+    return filtrados.slice(inicio, inicio + tamanoPagina)
+  }, [filtrados, pagina, tamanoPagina])
+
   return (
     <div>
       <PageHeader
@@ -119,7 +132,18 @@ export default function TodosReclamosPage() {
       </Card>
 
       <Card>
-        <ReclamoTable reclamos={filtrados} cargando={cargando} onVer={(r) => abrirDetalle(r.id)} />
+        <ReclamoTable reclamos={paginados} cargando={cargando} onVer={(r) => abrirDetalle(r.id)} />
+        {!cargando && filtrados.length > 0 && (
+          <div className="mt-4">
+            <Pagination
+              total={filtrados.length}
+              paginaActual={pagina}
+              tamanoPagina={tamanoPagina}
+              onCambiarPagina={setPagina}
+              onCambiarTamano={setTamanoPagina}
+            />
+          </div>
+        )}
       </Card>
 
       <Modal
