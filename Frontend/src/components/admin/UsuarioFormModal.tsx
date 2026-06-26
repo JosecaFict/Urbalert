@@ -98,14 +98,16 @@ export default function UsuarioFormModal({
             value={form.email}
             onChange={(e) => set('email', e.target.value)}
           />
-          <Input
-            label={editando ? 'Nueva contraseña (opcional)' : 'Contraseña'}
-            type="password"
-            required={!editando}
-            placeholder={editando ? 'Dejar vacío para no cambiar' : 'Mínimo 6 caracteres'}
-            value={form.password}
-            onChange={(e) => set('password', e.target.value)}
-          />
+          {!editando && (
+            <Input
+              label="Contraseña"
+              type="password"
+              required
+              placeholder="Mínimo 8 caracteres, mayúscula, minúscula, dígito y especial"
+              value={form.password}
+              onChange={(e) => set('password', e.target.value)}
+            />
+          )}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <Input label="Carnet de identidad" value={form.ci} onChange={(e) => set('ci', e.target.value)} />

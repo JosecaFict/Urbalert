@@ -18,6 +18,7 @@ from .serializers import (
     RolSerializer,
     UsuarioSerializer,
     build_token_response,
+    validar_contrasena_segura,
 )
 
 
@@ -118,6 +119,20 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             self.request.user, 'Eliminación de usuario', 'Usuarios',
             f'Se eliminó el usuario {email}.', self.request,
         )
+
+    @action(detail=True, methods=['post'], url_path='restablecer-contrasena')
+    def restablecer_contrasena(self, request, pk=None):
+        usuario = self.get_object()
+        nueva = request.data.get('password', '')
+        # `validate_password` lanza ValidationError con el mensaje específico
+        validar_contrasena_segura(nueva)
+        usuario.set_password(nueva)
+        usuario.save(update_fields=['password'])
+        registrar_bitacora(
+            request.user, 'Restablecimiento de contraseña', 'Usuarios',
+            f'Se restableció la contraseña de {usuario.email}.', request,
+        )
+        return Response({'detail': 'Contraseña actualizada.'})
 
     def _por_rol(self, nombre_rol):
         qs = self.queryset.filter(rol__nombre=nombre_rol)

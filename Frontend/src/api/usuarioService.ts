@@ -37,6 +37,10 @@ export const usuarioService = {
     await api.delete(`/usuarios/${id}/`)
   },
 
+  async restablecerPassword(id: number, password: string): Promise<void> {
+    await api.post(`/usuarios/${id}/restablecer-contrasena/`, { password })
+  },
+
   async ciudadanos(): Promise<Usuario[]> {
     const { data } = await api.get('/usuarios/ciudadanos/')
     return desempaquetar<Usuario>(data)

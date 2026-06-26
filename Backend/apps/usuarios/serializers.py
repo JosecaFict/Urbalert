@@ -8,9 +8,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Rol, Usuario
 
 
+CARACTERES_ESPECIALES = r'[!@#$%^&*()_+\-=\[\]{};:\'",.<>/?\\|`~]'
+
+
 def validar_contrasena_segura(value):
     """Valida la política de contraseñas: mínimo 8 caracteres, con al menos
-    una mayúscula, una minúscula y un número. Devuelve el valor o lanza error.
+    una mayúscula, una minúscula, un número y un carácter especial.
+    Devuelve el valor o lanza error.
     """
     if len(value) < 8:
         raise serializers.ValidationError(
@@ -28,6 +32,10 @@ def validar_contrasena_segura(value):
         raise serializers.ValidationError(
             'La contraseña debe incluir al menos un número.'
         )
+    if not re.search(CARACTERES_ESPECIALES, value):
+        raise serializers.ValidationError(
+            'La contraseña debe incluir al menos un carácter especial.'
+        )
     return value
 
 
@@ -42,7 +50,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
     rol_nombre = serializers.CharField(source='rol.nombre', read_only=True)
     rol_descripcion = serializers.CharField(source='rol.descripcion', read_only=True)
-    password = serializers.CharField(write_only=True, required=False, min_length=6)
+    password = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = Usuario
@@ -53,6 +61,9 @@ class UsuarioSerializer(serializers.ModelSerializer):
             'password', 'is_active',
         ]
         read_only_fields = ['fecha_registro', 'ultimo_acceso', 'nombre_completo']
+
+    def validate_password(self, value):
+        return validar_contrasena_segura(value)
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
@@ -65,11 +76,12 @@ class UsuarioSerializer(serializers.ModelSerializer):
         return usuario
 
     def update(self, instance, validated_data):
-        password = validated_data.pop('password', None)
+        # Las contraseñas se cambian solo vía el endpoint dedicado
+        # `restablecer-contrasena/` para que la acción quede auditada y
+        # no se mezcle con la edición general del usuario.
+        validated_data.pop('password', None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        if password:
-            instance.set_password(password)
         instance.save()
         return instance
 
