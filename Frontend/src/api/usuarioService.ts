@@ -14,7 +14,7 @@ function desempaquetar<T>(data: T[] | Paginado<T>): T[] {
 
 export const usuarioService = {
   async listar(): Promise<Usuario[]> {
-    const { data } = await api.get('/usuarios/')
+    const { data } = await api.get('/usuarios/', { params: { page_size: 1000 } })
     return desempaquetar<Usuario>(data)
   },
 
