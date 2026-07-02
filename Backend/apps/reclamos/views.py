@@ -1,9 +1,14 @@
 """Vistas de reclamos y categorías."""
+import logging
+import traceback
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+logger = logging.getLogger(__name__)
 
 from apps.bitacora.utils import registrar_bitacora
 from apps.notificaciones.models import Notificacion
@@ -90,9 +95,17 @@ class ReclamoViewSet(viewsets.ModelViewSet):
         estado_pendiente = EstadoReclamo.objects.get(
             nombre=EstadoReclamo.PENDIENTE
         )
-        reclamo = serializer.save(
-            ciudadano=request.user, estado_actual=estado_pendiente
-        )
+        try:
+            reclamo = serializer.save(
+                ciudadano=request.user, estado_actual=estado_pendiente
+            )
+        except Exception as exc:
+            logger.error(
+                'FALLO_CREACION_RECLAMO tipo=%s mensaje=%s',
+                type(exc).__name__, str(exc),
+            )
+            logger.error('TRACEBACK_COMPLETO:\n%s', traceback.format_exc())
+            raise
         # Registrar historial inicial
         from .models import HistorialEstadoReclamo
         HistorialEstadoReclamo.objects.create(
