@@ -229,6 +229,43 @@ SIMPLE_JWT = {
 
 
 # --------------------------------------------------------------------------- #
+# Logging: volcar errores y tracebacks al stdout para que Railway los capture.
+# --------------------------------------------------------------------------- #
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'cloudinary': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
+
+# --------------------------------------------------------------------------- #
 # CORS
 # --------------------------------------------------------------------------- #
 CORS_ALLOWED_ORIGINS = env_list(
