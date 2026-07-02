@@ -183,9 +183,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # En dev seguimos guardando en disco local para no depender de internet.
 # En producción, si las 3 credenciales están cargadas como env vars,
 # el DEFAULT_FILE_STORAGE apunta a Cloudinary.
-CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME', '')
-CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY', '')
-CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET', '')
+CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME', '').strip()
+CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY', '').strip()
+CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET', '').strip()
 
 if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
     CLOUDINARY_STORAGE = {
